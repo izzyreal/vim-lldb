@@ -1,16 +1,17 @@
 
 " Vim script glue code for LLDB integration
 
+" Modified by Izmar (izzyreal on GitHub) to not require vim-pathogen
 function! s:FindPythonScriptDir()
-  for dir in pathogen#split(&runtimepath)
-    let searchstr = "python-vim-lldb"
-    let candidates = pathogen#glob_directories(dir . "/" . searchstr)
-    if len(candidates) > 0
-      return candidates[0]
+  let searchstr = "python-vim-lldb"
+  for dir in split(&runtimepath, ',')
+    let candidate = fnamemodify(dir . "/" . searchstr, ':p')
+    if filereadable(candidate . '/plugin.py') || isdirectory(candidate)
+      return candidate
     endif
   endfor
-  return
-endfunction()
+  return ''
+endfunction
 
 function! s:InitLldbPlugin()
   if !has('python3')
